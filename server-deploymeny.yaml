@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: taskserver
+  labels:
+    app: taskserver
+spec:
+  ports:
+    - port: 8080
+      targetPort: 25478
+  selector:
+    app: taskserver
+    tier: frontend
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: server-pv-claim
+  labels:
+    app: taskserver
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: taskserver
+  labels:
+    app: taskserver
+spec:
+  selector:
+    matchLabels:
+      app: taskserver
+      tier: frontend
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: taskserver
+        tier: frontend
+    spec:
+      containers:
+      - image: egulacti/taskserver:0.1
+        name: taskserver
+        command: ["app"]
+        args: ["-token", "f9403fc5f537b4ab332d", "/var/root"]
+        ports:
+        - containerPort: 25478
+          name: taskserver
+        volumeMounts:
+        - name: taskserver-persistent-storage
+          mountPath: /var/root
+      volumes:
+      - name: taskserver-persistent-storage
+        persistentVolumeClaim:
+          claimName: server-pv-claim
