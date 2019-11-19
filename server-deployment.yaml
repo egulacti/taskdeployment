@@ -8,8 +8,10 @@ spec:
   ports:
     - port: 8080
       targetPort: 25478
+      name: taskserver
     - port: 19999
       targetPort: 19999
+      name: netdata
   selector:
     app: taskserver
     tier: frontend
