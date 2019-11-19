@@ -1,0 +1,40 @@
+apiVersion: apps/v1 #  for k8s versions before 1.9.0 use apps/v1beta2  and before 1.8.0 use extensions/v1beta1
+kind: Deployment
+metadata:
+  name: taskclient
+spec:
+  selector:
+    matchLabels:
+      app: taskclient
+      role: client
+      tier: backend
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: taskclient
+        role: client
+        tier: backend
+    spec:
+      containers:
+      - name: taskclient
+        image: egulacti/taskclient:0.1
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        env:
+        - name: CAS_TARGET_SERVER
+          value: "http://35.204.173.115:8080"
+        - name: CAS_TOKEN
+          value: "f9403fc5f537b4ab332d"
+        - name: CAS_CONTENT_SIZE
+          value: "540"
+        - name: CAS_HIT_RATIO
+          value: "50"
+        - name: CAS_TEST_DELAY
+          value: "500"
+        - name: CAS_TEST_PATTERN
+          value: "w"
+        - name: CAS_FILES_2READ
+          value: ""
