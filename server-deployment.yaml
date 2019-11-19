@@ -8,6 +8,8 @@ spec:
   ports:
     - port: 8080
       targetPort: 25478
+    - port: 19999
+      targetPort: 19999
   selector:
     app: taskserver
     tier: frontend
@@ -46,13 +48,15 @@ spec:
         tier: frontend
     spec:
       containers:
-      - image: egulacti/taskserver:0.1
+      - image: egulacti/taskserver:0.2
         name: taskserver
         command: ["app"]
         args: ["-token", "f9403fc5f537b4ab332d", "/var/root"]
         ports:
         - containerPort: 25478
           name: taskserver
+        - containerPort: 19999
+          name: netdata
         volumeMounts:
         - name: taskserver-persistent-storage
           mountPath: /var/root
